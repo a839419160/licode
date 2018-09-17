@@ -5,6 +5,7 @@
 #define ERIZO_SRC_ERIZO_MEDIA_CODECS_AUDIOCODEC_H_
 
 extern "C" {
+  #define __STDC_CONSTANT_MACROS
   #include <libavutil/avutil.h>
   #include <libavcodec/avcodec.h>
 }

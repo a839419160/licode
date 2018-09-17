@@ -54,7 +54,7 @@ int VideoEncoder::initEncoder(const VideoCodecInfo& info) {
   vCoderContext->qmax = 40;  // rc_quantifiers
   vCoderContext->profile = 3;
   // vCoderContext->frame_skip_threshold = 30;
-  vCoderContext->rc_buffer_aggressivity = 0.95;
+  vCoderContext->rc_buffer_size= 0.95;
   // vCoderContext->rc_buffer_size = vCoderContext->bit_rate;
   // vCoderContext->rc_initial_buffer_occupancy = vCoderContext->bit_rate / 2;
   vCoderContext->rc_initial_buffer_occupancy = 500;
