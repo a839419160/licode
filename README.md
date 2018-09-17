@@ -1,5 +1,7 @@
 # Licode
 
+## 增加centos支持(support centos)
+
 An Open Source WebRTC Communications Platform.
 
 With Licode you can host your own WebRTC conference provider and build applications on top of it with easy to use APIs: [client-side](http://licode.readthedocs.io/en/master/client_api/) and [server-side](http://licode.readthedocs.io/en/master/server_api/).
