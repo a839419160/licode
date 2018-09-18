@@ -80,7 +80,7 @@ install_yum_deps() {
     npm install
     npm install -g node-gyp --registry=https://registry.npm.taobao.org
     npm install gulp@3.9.1 gulp-eslint@3 run-sequence@2.2.1 webpack-stream@4.0.0 google-closure-compiler-js@20170521.0.0 del@3.0.0 gulp-sourcemaps@2.6.4 script-loader@0.7.2 expose-loader@0.7.5 --registry=https://registry.npm.taobao.org
-    sudo yum install -y -q git make cmake glib2-devel pkgconfig boost-devel rabbitmq-server mongodb-server curl log4cxx-devel
+    sudo yum install -y -q git make cmake glib2-devel pkgconfig boost-devel rabbitmq-server mongodb-server mongodb curl log4cxx-devel gnutls-devel
 
     sudo chown -R $(whoami) ~/.npm
 }
@@ -94,8 +94,16 @@ install_libnice() {
     inst $LIB_DIR https://github.com/libnice/libnice git ./autogen.sh --prefix="$PREFIX_DIR"
 }
 
+function nasm_inst() {
+    dlrepo https://www.nasm.us/nasm.repo
+    sudo yum -y install nasm
+    rmrepo nasm.repo
+}
+
 install_mediadeps() {
     sudo yum -y -q install git autoconf automake gettext make libtool mercurial pkgconfig patch libXext-devel glibc libstdc++ zlib
+    #for x264
+    nasm_inst
     #inst $LIB_DIR https://github.com/madler/zlib git ./configure --prefix="$PREFIX_DIR"
     inst $LIB_DIR https://github.com/webmproject/libvpx git ./configure --prefix="$PREFIX_DIR" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm
     inst $LIB_DIR https://github.com/mirror/x264 git ./configure --prefix="$PREFIX_DIR" --enable-shared
