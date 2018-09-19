@@ -80,7 +80,7 @@ install_yum_deps() {
     npm install
     npm install -g node-gyp --registry=https://registry.npm.taobao.org
     npm install gulp@3.9.1 gulp-eslint@3 run-sequence@2.2.1 webpack-stream@4.0.0 google-closure-compiler-js@20170521.0.0 del@3.0.0 gulp-sourcemaps@2.6.4 script-loader@0.7.2 expose-loader@0.7.5 --registry=https://registry.npm.taobao.org
-    sudo yum install -y -q git make cmake glib2-devel pkgconfig boost-devel rabbitmq-server mongodb-server mongodb curl log4cxx-devel gnutls-devel
+    sudo yum install -y -q git make cmake glib2-devel pkgconfig boost-devel rabbitmq-server mongodb-server mongodb curl log4cxx-devel gnutls-devel bzip2
 
     sudo chown -R $(whoami) ~/.npm
 }
