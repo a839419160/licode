@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 
-SCRIPT=`pwd`/$0
-FILENAME=`basename $SCRIPT`
-PATHNAME=`dirname $SCRIPT`
+SCRIPT=$(pwd)/$0
+FILENAME=$(basename $SCRIPT)
+PATHNAME=$(dirname $SCRIPT)
 ROOT=$PATHNAME/..
-LOG_DIR=$ROOT/logs
-
+DEMO_LOG_DIR=$ROOT/demo_logs
 
 #kill process by pid file in dir
 function killbypid() {
@@ -20,15 +19,9 @@ function killbypid() {
                     echo "pid not exist"
                 fi
                 CPIDS=$(pgrep -P $PID)
-                if [ -n "$CPIDS" ]; then
-                    CCPIDS=$(pgrep -P $CPIDS)
-                fi
-                if [ -n "$CCPIDS" ]; then
-                    CCCPIDS=$(pgrep -P $CCPIDS)
-                fi
  
-                echo -e "`basename $path`\t\t\t\t kill -9 $PID $CPIDS $CCPIDS $CCCPIDS"
-                sudo kill -9 $PID $CPIDS $CCPIDS $CCCPIDS > /dev/null 2>&1
+                echo -e "`basename $path`\t\t\t\t kill -9 $PID $CPIDS "
+                sudo kill -9 $PID $CPIDS > /dev/null 2>&1
                 sudo rm $path
             fi
         fi
@@ -36,11 +29,11 @@ function killbypid() {
 }
 
 function killbydir() {
-    killbypid $LOG_DIR
+    killbypid $DEMO_LOG_DIR
 }
 
-echo '-------------------stop all licode services--------------------'
-read -r -p "kill mongod rabbitmq erizoAgent erizoController, are you sure? [Y/n] " input
+echo '---------------------stop example services-----------------'
+read -r -p "kill nginx basicServer, are you sure? [Y/n] " input
 
 case $input in
 [yY][eE][sS] | [yY])

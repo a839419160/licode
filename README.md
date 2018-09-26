@@ -1,6 +1,8 @@
 # Licode
 
-## 增加centos支持(support centos)
+## 只支持centos (only support centos)
+* 线上系统基本都用centos
+* 没有时间适配其他系统
 
 An Open Source WebRTC Communications Platform.
 
