@@ -36,6 +36,6 @@ start_nginx
 echo '--------------start basicServer----------------'
 start_basic_example
 echo '----------------------------------------------------------------------------------------'
-echo 'open in chrome: https://yourip , enable "load unsafe script" at the end of address bar!'
+echo 'open in chrome: https://ip:8443 , enable "load unsafe script" at the end of address bar!'
 echo ''
-echo '在chrome打开：https://yourip ，在地址拦后端打开“加载不安全脚本”即可'
+echo '在chrome打开：https://ip:8443 ，在地址拦后端打开“加载不安全脚本”即可'
