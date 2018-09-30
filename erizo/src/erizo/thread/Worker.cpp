@@ -1,7 +1,7 @@
 #include "thread/Worker.h"
 
-#include <boost/asio.hpp>
-#include <boost/thread.hpp>
+#include <asio.hpp>
+#include <thread>
 
 #include <algorithm>
 #include <memory>
@@ -51,13 +51,16 @@ void Worker::start(std::shared_ptr<std::promise<void>> start_promise) {
     }
     return size_t(0);
   };
-  group_.add_thread(new boost::thread(worker));
+  group_.emplace_back(std::thread(worker));
 }
 
 void Worker::close() {
   closed_ = true;
   service_worker_.reset();
-  group_.join_all();
+  for (auto& thread : group_){
+  if (thread.joinable())
+    thread.join();
+  }
   service_.stop();
 }
 

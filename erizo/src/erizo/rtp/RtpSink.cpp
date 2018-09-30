@@ -9,9 +9,10 @@
 
 #include <string>
 #include <cstring>
+#include <functional>
 
 using std::memcpy;
-using boost::asio::ip::udp;
+using asio::ip::udp;
 
 namespace erizo {
   DEFINE_LOGGER(RtpSink, "rtp.RtpSink");
@@ -23,12 +24,12 @@ namespace erizo {
     query_.reset(new udp::resolver::query(udp::v4(), url.c_str(), port.c_str()));
     iterator_ = resolver_->resolve(*query_);
     sending_ = true;
-    boost::asio::ip::udp::endpoint sender_endpoint;
-    fbSocket_->async_receive_from(boost::asio::buffer(buffer_, LENGTH), sender_endpoint,
-        boost::bind(&RtpSink::handleReceive, this, boost::asio::placeholders::error,
-          boost::asio::placeholders::bytes_transferred));
-    send_Thread_ = boost::thread(&RtpSink::sendLoop, this);
-    receive_Thread_ = boost::thread(&RtpSink::serviceLoop, this);
+    asio::ip::udp::endpoint sender_endpoint;
+    fbSocket_->async_receive_from(asio::buffer(buffer_, LENGTH), sender_endpoint,
+        std::bind(&RtpSink::handleReceive, this, std::placeholders::_1,
+          std::placeholders::_2));
+    send_Thread_ = std::thread(&RtpSink::sendLoop, this);
+    receive_Thread_ = std::thread(&RtpSink::serviceLoop, this);
   }
 
   RtpSink::~RtpSink() {
@@ -49,12 +50,12 @@ namespace erizo {
   }
 
   int RtpSink::sendData(char* buffer, int len) {
-    socket_->send_to(boost::asio::buffer(buffer, len), *iterator_);
+    socket_->send_to(asio::buffer(buffer, len), *iterator_);
     return len;
   }
 
   void RtpSink::queueData(const char* buffer, int len, packetType type) {
-    boost::mutex::scoped_lock lock(queueMutex_);
+    std::lock_guard<std::mutex> lock(queueMutex_);
     if (sending_ == false)
       return;
     if (sendQueue_.size() < 1000) {
@@ -69,7 +70,7 @@ namespace erizo {
 
   void RtpSink::sendLoop() {
     while (sending_) {
-      boost::unique_lock<boost::mutex> lock(queueMutex_);
+      std::unique_lock<std::mutex> lock(queueMutex_);
       while (sendQueue_.size() == 0) {
         cond_.wait(lock);
         if (!sending_) {
@@ -87,7 +88,7 @@ namespace erizo {
     }
   }
 
-  void RtpSink::handleReceive(const::boost::system::error_code& error, size_t bytes_recvd) {  // NOLINT
+  void RtpSink::handleReceive(const asio::error_code& error, size_t bytes_recvd) {  // NOLINT
     if (bytes_recvd > 0 && fb_sink_) {
       fb_sink_->deliverFeedback(std::make_shared<DataPacket>(0, reinterpret_cast<char*>(buffer_),
             static_cast<int>(bytes_recvd), OTHER_PACKET));

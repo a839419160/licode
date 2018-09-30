@@ -1,6 +1,5 @@
 #include "media/ExternalInput.h"
 
-#include <boost/cstdint.hpp>
 #include <sys/time.h>
 #include <arpa/inet.h>
 #include <libavutil/time.h>
@@ -106,7 +105,10 @@ int ExternalInput::init() {
     ELOG_DEBUG("No need for video transcoding, already VP8");
     video_time_base_ = st->time_base.den;
     needTranscoding_ = false;
-    decodedBuffer_.reset((unsigned char*) malloc(100000));
+    // decodedBuffer_.reset(nullptr);
+    // decodedBuffer_ = ((unsigned char*) malloc(100000));
+    // new char[]
+    decodedBuffer_.reset(new unsigned char[100000]);
     MediaInfo om;
     om.processorType = PACKAGE_ONLY;
     if (audio_st) {
@@ -129,7 +131,9 @@ int ExternalInput::init() {
     inCodec_.initDecoder(st->codec);
 
     bufflen_ = st->codec->width*st->codec->height*3/2;
-    decodedBuffer_.reset((unsigned char*) malloc(bufflen_));
+    // decodedBuffer_.reset(nullptr);
+    // decodedBuffer_.reset((unsigned char*) malloc(bufflen_));
+    decodedBuffer_.reset(new unsigned char[100000]);
 
 
     om.processorType = RTP_ONLY;
@@ -152,10 +156,10 @@ int ExternalInput::init() {
 
   av_init_packet(&avpacket_);
 
-  thread_ = boost::thread(&ExternalInput::receiveLoop, this);
+  thread_ = std::thread(&ExternalInput::receiveLoop, this);
   running_ = true;
   if (needTranscoding_)
-    encodeThread_ = boost::thread(&ExternalInput::encodeLoop, this);
+    encodeThread_ = std::thread(&ExternalInput::encodeLoop, this);
 
   return true;
 }

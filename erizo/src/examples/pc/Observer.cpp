@@ -3,7 +3,7 @@
  */
 
 #include <time.h>
-#include <boost/regex.hpp>
+#include <regex>
 #include "Observer.h"
 
 Observer::Observer(std::string name, SDPReceiver *receiver) :
@@ -19,7 +19,7 @@ void Observer::wait() {
 }
 
 void Observer::init() {
-	m_Thread_ = boost::thread(&Observer::start, this);
+	m_Thread_ = std::thread(&Observer::start, this);
 }
 
 void Observer::start() {
@@ -89,7 +89,7 @@ void Observer::OnMessageFromPeer(int peer_id, const std::string& message) {
 	printf("message : %s\n", message.c_str());
 	std::string roap = message;
 	if (roap.find("OFFER") != std::string::npos) {
-		boost::thread theThread(&Observer::processMessage, this, peer_id,
+		std::thread theThread(&Observer::processMessage, this, peer_id,
 				message);
 	}
 }
@@ -99,13 +99,13 @@ void Observer::OnMessageSent(int err) {
 
 void Observer::Replace(std::string& text, const std::string& pattern,
 		const std::string& replace) {
-	boost::regex regex_pattern(pattern, boost::regex_constants::perl);
-	text = boost::regex_replace(text, regex_pattern, replace);
+	std::regex regex_pattern(pattern, std::regex_constants::perl);
+	text = std::regex_replace(text, regex_pattern, replace);
 }
 std::string Observer::Match(const std::string& text,
 		const std::string& pattern) {
-	boost::regex regex_pattern(pattern);
-	boost::cmatch what;
-	boost::regex_match(text.c_str(), what, regex_pattern);
+	std::regex regex_pattern(pattern);
+	std::cmatch what;
+	std::regex_match(text.c_str(), what, regex_pattern);
 	return (std::string(what[1].first, what[1].second));
 }

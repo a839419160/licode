@@ -1,6 +1,6 @@
 #include <media/MediaProcessor.h>
 #include <media/utils/RtpUtils.h>
-#include <boost/asio.hpp>
+#include <asio.hpp>
 
 #ifndef TEST_H_
 #define TEST_H_
@@ -15,11 +15,11 @@ public:
 	void send(char *buff, int buffSize);
 private:
 
-	boost::asio::ip::udp::socket* socket_;
-	boost::asio::ip::udp::resolver* resolver_;
+	asio::ip::udp::socket* socket_;
+	asio::ip::udp::resolver* resolver_;
 
-	boost::asio::ip::udp::resolver::query* query_;
-	boost::asio::io_service* ioservice_;
+	asio::ip::udp::resolver::query* query_;
+	asio::io_service* ioservice_;
 	InputProcessor* ip;
 	erizo::RtpParser pars;
 

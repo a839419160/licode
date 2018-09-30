@@ -100,7 +100,7 @@ bool WebRtcConnection::init() {
 }
 
 bool WebRtcConnection::createOffer(bool video_enabled, bool audioEnabled, bool bundle) {
-  boost::mutex::scoped_lock lock(update_state_mutex_);
+  std::lock_guard<std::mutex> lock(update_state_mutex_);
   bundle_ = bundle;
   video_enabled_ = video_enabled;
   audio_enabled_ = audioEnabled;
@@ -167,7 +167,7 @@ void WebRtcConnection::addMediaStream(std::shared_ptr<MediaStream> media_stream)
 
 void WebRtcConnection::removeMediaStream(const std::string& stream_id) {
   asyncTask([stream_id] (std::shared_ptr<WebRtcConnection> connection) {
-    boost::mutex::scoped_lock lock(connection->update_state_mutex_);
+    std::lock_guard<std::mutex> lock(connection->update_state_mutex_);
     ELOG_DEBUG("%s message: removing mediaStream, id: %s", connection->toLog(), stream_id.c_str());
     connection->media_streams_.erase(std::remove_if(connection->media_streams_.begin(),
                                                     connection->media_streams_.end(),
@@ -216,7 +216,7 @@ bool WebRtcConnection::setRemoteSdpInfo(std::shared_ptr<SdpInfo> sdp, std::strin
 }
 
 std::shared_ptr<SdpInfo> WebRtcConnection::getLocalSdpInfo() {
-  boost::mutex::scoped_lock lock(update_state_mutex_);
+  std::lock_guard<std::mutex> lock(update_state_mutex_);
   ELOG_DEBUG("%s message: getting local SDPInfo", toLog());
   forEachMediaStream([this] (const std::shared_ptr<MediaStream> &media_stream) {
     if (!media_stream->isRunning() || media_stream->isPublisher()) {
@@ -557,7 +557,7 @@ void WebRtcConnection::onTransportData(std::shared_ptr<DataPacket> packet, Trans
 
 void WebRtcConnection::maybeNotifyWebRtcConnectionEvent(const WebRTCEvent& event, const std::string& message,
     const std::string& stream_id) {
-  boost::mutex::scoped_lock lock(event_listener_mutex_);
+  std::lock_guard<std::mutex> lock(event_listener_mutex_);
   if (!conn_event_listener_) {
       return;
   }
@@ -574,7 +574,7 @@ void WebRtcConnection::asyncTask(std::function<void(std::shared_ptr<WebRtcConnec
 }
 
 void WebRtcConnection::updateState(TransportState state, Transport * transport) {
-  boost::mutex::scoped_lock lock(update_state_mutex_);
+  std::lock_guard<std::mutex> lock(update_state_mutex_);
   WebRTCEvent temp = global_state_;
   std::string msg = "";
   ELOG_DEBUG("%s transportName: %s, new_state: %d", toLog(), transport->transport_name.c_str(), state);
@@ -710,7 +710,7 @@ void WebRtcConnection::setMetadata(std::map<std::string, std::string> metadata) 
 }
 
 void WebRtcConnection::setWebRtcConnectionEventListener(WebRtcConnectionEventListener* listener) {
-  boost::mutex::scoped_lock lock(event_listener_mutex_);
+  std::lock_guard<std::mutex> lock(event_listener_mutex_);
   this->conn_event_listener_ = listener;
 }
 

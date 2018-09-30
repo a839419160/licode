@@ -107,6 +107,7 @@ execute_tests(){
 if [ "$#" -eq 0 ]
 then
   export PATH=/opt/rh/devtoolset-7/root/bin:$PATH
+  gcc -v
   install_erizo
   install_erizo_api
   install_erizo_controller

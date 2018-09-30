@@ -3,7 +3,7 @@
 
 
 #include <map>
-#include <boost/asio.hpp>
+#include <asio.hpp>
 
 typedef std::map<int, std::string> Peers;
 
@@ -50,24 +50,24 @@ class PC {
  protected:
   void Close();
   bool ConnectControlSocket();
-  boost::asio::ip::tcp::socket* CreateClientSocket(int port);
+  asio::ip::tcp::socket* CreateClientSocket(int port);
   void OnMessageFromPeer(int peer_id, const std::string& message);
 
   // Returns true if the whole response has been read.
-  bool ReadIntoBuffer(boost::asio::ip::tcp::socket* socket, std::string* data,
+  bool ReadIntoBuffer(asio::ip::tcp::socket* socket, std::string* data,
                       size_t* content_length);
-  void OnRead(boost::asio::ip::tcp::socket* socket);
+  void OnRead(asio::ip::tcp::socket* socket);
   void parseMessage(std::string *data);
 
 
-  void OnClose(boost::asio::ip::tcp::socket* socket, int err);
+  void OnClose(asio::ip::tcp::socket* socket, int err);
 
   PCClientObserver* callback_;
   std::string server_address_;
 
-  boost::asio::ip::tcp::socket* control_socket_;
-  boost::asio::ip::tcp::resolver* resolver_;
-  boost::asio::io_service* ioservice_;
+  asio::ip::tcp::socket* control_socket_;
+  asio::ip::tcp::resolver* resolver_;
+  asio::io_service* ioservice_;
 
   std::string onconnect_data_;
   std::string control_data_;

@@ -409,7 +409,7 @@ void MediaStream::notifyStats(const std::string& message) {
   if (!async_stats_) {
     return;
   }
-  boost::mutex::scoped_lock lock(mutex);
+  std::lock_guard<std::mutex> lock(mutex);
   this->stats_messages.push(message);
   async_stats_->data = this;
   uv_async_send(async_stats_);
@@ -422,7 +422,7 @@ void MediaStream::notifyMediaStreamEvent(const std::string& type, const std::str
   if (!async_event_) {
     return;
   }
-  boost::mutex::scoped_lock lock(mutex);
+  std::lock_guard<std::mutex> lock(mutex);
   this->event_messages.push(std::make_pair(type, message));
   async_event_->data = this;
   uv_async_send(async_event_);
@@ -434,7 +434,7 @@ NAUV_WORK_CB(MediaStream::statsCallback) {
   if (!obj || !obj->me) {
     return;
   }
-  boost::mutex::scoped_lock lock(obj->mutex);
+  std::lock_guard<std::mutex> lock(obj->mutex);
   if (obj->has_stats_callback_) {
     while (!obj->stats_messages.empty()) {
       Local<Value> args[] = {Nan::New(obj->stats_messages.front().c_str()).ToLocalChecked()};
@@ -450,7 +450,7 @@ NAUV_WORK_CB(MediaStream::eventCallback) {
   if (!obj || !obj->me) {
     return;
   }
-  boost::mutex::scoped_lock lock(obj->mutex);
+  std::lock_guard<std::mutex> lock(obj->mutex);
   ELOG_DEBUG("%s, message: eventsCallback", obj->toLog());
   if (obj->has_event_callback_) {
       while (!obj->event_messages.empty()) {

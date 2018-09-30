@@ -6,10 +6,10 @@ set(ERIZO_VERSION_MAJOR 0)
 set(ERIZO_VERSION_MINOR 1)
 if(${ERIZO_BUILD_TYPE} STREQUAL "debug")
   message("Generating DEBUG project")
-  set(CMAKE_CXX_FLAGS "-g -Wall -std=c++11 ${ERIZO_CMAKE_CXX_FLAGS}")
+  set(CMAKE_CXX_FLAGS "-g -Wall -std=c++11 -DASIO_STANDALONE ${ERIZO_CMAKE_CXX_FLAGS}")
 else()
   message("Generating RELEASE project")
-  set(CMAKE_CXX_FLAGS "-g -Wall -O3 -std=c++11 ${ERIZO_CMAKE_CXX_FLAGS}")
+  set(CMAKE_CXX_FLAGS "-g -Wall -O3 -std=c++11 -DASIO_STANDALONE ${ERIZO_CMAKE_CXX_FLAGS}")
 endif()
 
 
@@ -21,4 +21,4 @@ add_library(erizo SHARED ${ERIZO_SOURCES})
 
 #message("Libs ${SRTP} ${NICE} ${GTHREAD} ${SSL} ${CRYPTO} ${LIBS} ${LOG}")
 
-target_link_libraries(erizo ${GLIB_LIBRARIES} ${Boost_LIBRARIES} ${SRTP} ${NICE} ${GTHREAD} ${SSL} ${CRYPTO} ${LIBS} ${LOG} webrtc nicer nrappkit)
+target_link_libraries(erizo ${GLIB_LIBRARIES} ${SRTP} ${NICE} ${GTHREAD} ${SSL} ${CRYPTO} ${LIBS} ${LOG} webrtc nicer nrappkit)

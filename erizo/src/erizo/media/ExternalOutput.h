@@ -1,7 +1,9 @@
 #ifndef ERIZO_SRC_ERIZO_MEDIA_EXTERNALOUTPUT_H_
 #define ERIZO_SRC_ERIZO_MEDIA_EXTERNALOUTPUT_H_
 
-#include <boost/thread.hpp>
+
+#include <thread>
+#include <condition_variable>
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -63,9 +65,9 @@ class ExternalOutput : public MediaSink, public RawDataReceiver, public Feedback
   std::unique_ptr<webrtc::UlpfecReceiver> fec_receiver_;
   RtpPacketQueue audio_queue_, video_queue_;
   std::atomic<bool> recording_, inited_;
-  boost::mutex mtx_;  // a mutex we use to signal our writer thread that data is waiting.
-  boost::thread thread_;
-  boost::condition_variable cond_;
+  std::mutex mtx_;  // a mutex we use to signal our writer thread that data is waiting.
+  std::thread thread_;
+  std::condition_variable cond_;
   AVStream *video_stream_, *audio_stream_;
   AVFormatContext *context_;
 

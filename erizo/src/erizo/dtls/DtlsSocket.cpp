@@ -119,7 +119,7 @@ void DtlsSocket::forceRetransmit() {
 }
 
 void DtlsSocket::doHandshakeIteration() {
-  boost::mutex::scoped_lock lock(handshakeMutex_);
+  std::lock_guard<std::mutex> lock(handshakeMutex_);
   char errbuf[1024];
   int sslerr;
 

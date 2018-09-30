@@ -7,7 +7,7 @@
 
 #include <netinet/in.h>
 #include <srtp2/srtp.h>
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 
 #include <string>
 
@@ -23,7 +23,7 @@ namespace erizo {
 class SrtpChannel {
   DECLARE_LOGGER();
   static bool initialized;
-  static boost::mutex sessionMutex_;
+  static std::mutex sessionMutex_;
 
  public:
   /**

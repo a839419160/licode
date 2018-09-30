@@ -40,7 +40,7 @@ class MediaStream : public MediaSink, public erizo::MediaStreamStatsListener, pu
     std::queue<std::string> stats_messages;
     std::queue<std::pair<std::string, std::string>> event_messages;
 
-    boost::mutex mutex;
+    std::mutex mutex;
 
  private:
     MediaStream();

@@ -2,7 +2,6 @@
 
 #include <assert.h>
 
-#include <boost/bind.hpp>
 #include <utility>
 
 
@@ -11,7 +10,7 @@ Scheduler::Scheduler(int n_threads_servicing_queue)
   stop_requested_ = false;
   stop_when_empty_ = false;
   for (int index = 0; index < n_threads_servicing_queue; index++) {
-    group_.create_thread(boost::bind(&Scheduler::serviceQueue, this));
+    group_.emplace_back(std::bind(&Scheduler::serviceQueue, this));
   }
 }
 
@@ -64,7 +63,10 @@ void Scheduler::stop(bool drain) {
     }
   }
   new_task_scheduled_.notify_all();
-  group_.join_all();
+  for (auto& thread : group_){
+    if (thread.joinable())
+      thread.join();
+  }
 }
 
 void Scheduler::schedule(Scheduler::Function f, std::chrono::system_clock::time_point t) {
@@ -84,9 +86,9 @@ void Scheduler::scheduleFromNow(Scheduler::Function f, std::chrono::milliseconds
 // TODO(javier): Make it possible to unschedule repeated tasks before enable this code
 // static void Repeat(Scheduler* s, Scheduler::Function f, std::chrono::milliseconds delta_ms) {
 //   f();
-//   s->scheduleFromNow(boost::bind(&Repeat, s, f, delta_ms), delta_ms);
+//   s->scheduleFromNow(std::bind(&Repeat, s, f, delta_ms), delta_ms);
 // }
 
 // void Scheduler::scheduleEvery(Scheduler::Function f, std::chrono::milliseconds delta_ms) {
-//   scheduleFromNow(boost::bind(&Repeat, this, f, delta_ms), delta_ms);
+//   scheduleFromNow(std::bind(&Repeat, this, f, delta_ms), delta_ms);
 // }

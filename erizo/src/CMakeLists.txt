@@ -66,9 +66,6 @@ set(THIRD_PARTY_LIB "${CMAKE_CURRENT_SOURCE_DIR}/../../build/libdeps/build/lib/"
 find_package(Glib REQUIRED)
 include_directories(${GLIB_INCLUDE_DIRS})
 
-# BOOST
-set (BOOST_LIBS thread regex system)
-find_package(Boost COMPONENTS ${BOOST_LIBS} REQUIRED)
 
 # GTHREAD
 find_library(GTHREAD gthread-2.0 HINTS "${THIRD_PARTY_LIB}")

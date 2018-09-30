@@ -7,10 +7,10 @@
 #ifndef ERIZO_SRC_ERIZO_RTP_RTPSINK_H_
 #define ERIZO_SRC_ERIZO_RTP_RTPSINK_H_
 
-#include <boost/asio.hpp>
-#include <boost/scoped_ptr.hpp>
-#include <boost/thread/mutex.hpp>
-#include <boost/thread.hpp>
+#include <asio.hpp>
+#include <mutex>
+#include <thread>
+#include <condition_variable>
 
 #include <queue>
 #include <string>
@@ -28,16 +28,16 @@ class RtpSink: public MediaSink, public FeedbackSource {
   virtual ~RtpSink();
 
  private:
-  boost::scoped_ptr<boost::asio::ip::udp::socket> socket_, fbSocket_;
-  boost::scoped_ptr<boost::asio::ip::udp::resolver> resolver_;
+  std::unique_ptr<asio::ip::udp::socket> socket_, fbSocket_;
+  std::unique_ptr<asio::ip::udp::resolver> resolver_;
 
-  boost::scoped_ptr<boost::asio::ip::udp::resolver::query> query_;
-  boost::asio::ip::udp::resolver::iterator iterator_;
-  boost::asio::io_service io_service_;
+  std::unique_ptr<asio::ip::udp::resolver::query> query_;
+  asio::ip::udp::resolver::iterator iterator_;
+  asio::io_service io_service_;
 
-  boost::thread send_Thread_, receive_Thread_;
-  boost::condition_variable cond_;
-  boost::mutex queueMutex_;
+  std::thread send_Thread_, receive_Thread_;
+  std::condition_variable cond_;
+  std::mutex queueMutex_;
   std::queue<DataPacket> sendQueue_;
   bool sending_;
 
@@ -49,7 +49,7 @@ class RtpSink: public MediaSink, public FeedbackSource {
   int sendData(char* buffer, int len);
   void sendLoop();
   void serviceLoop();
-  void handleReceive(const::boost::system::error_code& error, size_t bytes_recvd);  // NOLINT
+  void handleReceive(const asio::error_code& error, size_t bytes_recvd);  // NOLINT
   void queueData(const char* buffer, int len, packetType type);
 };
 }  // namespace erizo

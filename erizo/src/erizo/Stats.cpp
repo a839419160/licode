@@ -29,12 +29,12 @@ namespace erizo {
   }
 
   void Stats::setStatsListener(MediaStreamStatsListener* listener) {
-    boost::mutex::scoped_lock lock(listener_mutex_);
+    std::lock_guard<std::mutex> lock(listener_mutex_);
     listener_ = listener;
   }
 
   void Stats::sendStats() {
-    boost::mutex::scoped_lock lock(listener_mutex_);
+    std::lock_guard<std::mutex> lock(listener_mutex_);
     if (listener_) listener_->notifyStats(getStats());
   }
 }  // namespace erizo

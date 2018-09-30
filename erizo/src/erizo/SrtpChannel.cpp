@@ -6,13 +6,14 @@
 #include <nice/nice.h>
 
 #include <string>
+#include <string.h>
 
 #include "SrtpChannel.h"
 
 namespace erizo {
 DEFINE_LOGGER(SrtpChannel, "SrtpChannel");
 bool SrtpChannel::initialized = false;
-boost::mutex SrtpChannel::sessionMutex_;
+std::mutex SrtpChannel::sessionMutex_;
 
 constexpr int kKeyStringLength = 32;
 
@@ -41,7 +42,7 @@ std::string octet_string_hex_string(const void *s, int length) {
 }
 
 SrtpChannel::SrtpChannel() {
-  boost::mutex::scoped_lock lock(SrtpChannel::sessionMutex_);
+  std::lock_guard<std::mutex> lock(SrtpChannel::sessionMutex_);
   if (SrtpChannel::initialized != true) {
     int res = srtp_init();
     ELOG_DEBUG("Initialized SRTP library %d", res);

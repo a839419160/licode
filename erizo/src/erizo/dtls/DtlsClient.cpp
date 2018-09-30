@@ -4,9 +4,6 @@ extern "C" {
   #include <srtp2/srtp.h>
 }
 
-#include <boost/thread.hpp>
-#include <boost/lexical_cast.hpp>
-
 #include <openssl/x509v3.h>
 
 #include <openssl/crypto.h>
@@ -21,6 +18,7 @@ extern "C" {
 #include <cassert>
 #include <string>
 #include <cstring>
+#include <thread>
 
 #include "./DtlsSocket.h"
 #include "./bf_dwrap.h"
@@ -160,7 +158,10 @@ int createCert(const std::string& pAor, int expireDays, int keyLen, X509*& outCe
 
   // set version to X509v3 (starts from 0)
   // X509_set_version(cert, 0L);
-  std::string thread_id = boost::lexical_cast<std::string>(boost::this_thread::get_id());
+  std::ostringstream oss;
+  oss << std::this_thread::get_id();
+  std::string thread_id = oss.str();
+
   unsigned int thread_number = 0;
   sscanf(thread_id.c_str(), "%x", &thread_number);
 

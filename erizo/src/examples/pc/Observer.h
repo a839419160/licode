@@ -6,7 +6,7 @@
 #define OBSERVER_H_
 
 #include <string>
-#include <boost/thread.hpp>
+#include <thread>
 
 #include "SDPReceiver.h"
 #include "PCSocket.h"
@@ -34,7 +34,7 @@ private:
 	void processMessage(int peerid, const std::string& message);
 
 	PC *pc_;
-	boost::thread m_Thread_;
+	std::thread m_Thread_;
 	std::string name_;
 	SDPReceiver *receiver_;
 };

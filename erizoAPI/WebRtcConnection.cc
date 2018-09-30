@@ -403,7 +403,7 @@ NAN_METHOD(WebRtcConnection::removeMediaStream) {
 // Async methods
 
 void WebRtcConnection::notifyEvent(erizo::WebRTCEvent event, const std::string& message, const std::string& stream_id) {
-  boost::mutex::scoped_lock lock(mutex);
+  std::lock_guard<std::mutex> lock(mutex);
   if (!async_) {
     return;
   }
@@ -420,7 +420,7 @@ NAUV_WORK_CB(WebRtcConnection::eventsCallback) {
   if (!obj || !obj->me) {
     return;
   }
-  boost::mutex::scoped_lock lock(obj->mutex);
+  std::lock_guard<std::mutex> lock(obj->mutex);
   ELOG_DEBUG("%s, message: eventsCallback", obj->toLog());
   while (!obj->event_status.empty()) {
     Local<Value> args[] = {Nan::New(obj->event_status.front()),

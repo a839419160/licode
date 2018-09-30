@@ -11,11 +11,10 @@ extern "C" {
 #include <openssl/crypto.h>
 #include <openssl/ssl.h>
 
-#include <boost/thread/mutex.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include <memory>
 #include <string>
+#include <mutex>
 
 #include "../logger.h"
 
@@ -123,7 +122,7 @@ class DtlsSocket {
 
   SocketType mSocketType;
   bool mHandshakeCompleted;
-  boost::mutex handshakeMutex_;
+  std::mutex handshakeMutex_;
 };
 
 class DtlsReceiver {

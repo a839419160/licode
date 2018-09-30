@@ -4,8 +4,6 @@
 
 #include "rtp/RtcpAggregator.h"
 
-#include <boost/thread.hpp>
-#include <boost/lexical_cast.hpp>
 
 #include <list>
 #include <map>
@@ -13,6 +11,7 @@
 #include <string>
 #include <utility>
 #include <cstring>
+#include <thread>
 
 #include "lib/Clock.h"
 #include "lib/ClockUtils.h"
@@ -29,9 +28,9 @@ RtcpAggregator::RtcpAggregator(MediaSink* msink, MediaSource* msource, uint32_t 
 }
 
 void RtcpAggregator::addSourceSsrc(uint32_t ssrc) {
-  boost::mutex::scoped_lock mlock(mapLock_);
+  std::lock_guard<std::mutex> mlock(mapLock_);
   if (rtcpData_.find(ssrc) == rtcpData_.end()) {
-    this->rtcpData_[ssrc] = boost::shared_ptr<RtcpData>(new RtcpData());
+    this->rtcpData_[ssrc] = std::shared_ptr<RtcpData>(new RtcpData());
     if (ssrc == this->rtcpSource_->getAudioSourceSSRC()) {
       ELOG_DEBUG("It is an audio SSRC %u", ssrc);
       this->rtcpData_[ssrc]->mediaType = AUDIO_TYPE;
@@ -51,15 +50,15 @@ void RtcpAggregator::analyzeSr(RtcpHeader* chead) {
   // We try to add it just in case it is not there yet (otherwise its noop)
   this->addSourceSsrc(recvSSRC);
 
-  boost::mutex::scoped_lock mlock(mapLock_);
-  boost::shared_ptr<RtcpData> theData = rtcpData_[recvSSRC];
-  boost::mutex::scoped_lock lock(theData->dataLock);
+  std::lock_guard<std::mutex> mlock(mapLock_);
+  std::shared_ptr<RtcpData> theData = rtcpData_[recvSSRC];
+  std::lock_guard<std::mutex> lock(theData->dataLock);
 
   uint64_t now = ClockUtils::timePointToMs(clock::now());
   uint32_t ntp;
   uint64_t theNTP = chead->getNtpTimestamp();
   ntp = (theNTP & (0xFFFFFFFF0000)) >> 16;
-  theData->senderReports.push_back(boost::shared_ptr<SrDelayData>( new SrDelayData(ntp, now)));
+  theData->senderReports.push_back(std::shared_ptr<SrDelayData>( new SrDelayData(ntp, now)));
   // We only store the last 20 sr
   if (theData->senderReports.size() > 20) {
     theData->senderReports.pop_front();
@@ -76,9 +75,9 @@ int RtcpAggregator::analyzeFeedback(char *buf, int len) {
     // We try to add it just in case it is not there yet (otherwise its noop)
     this->addSourceSsrc(sourceSsrc);
 
-    boost::mutex::scoped_lock mlock(mapLock_);
-    boost::shared_ptr<RtcpData> theData = rtcpData_[sourceSsrc];
-    boost::mutex::scoped_lock lock(theData->dataLock);
+    std::lock_guard<std::mutex> mlock(mapLock_);
+    std::shared_ptr<RtcpData> theData = rtcpData_[sourceSsrc];
+    std::lock_guard<std::mutex> lock(theData->dataLock);
     uint64_t nowms = ClockUtils::timePointToMs(clock::now());
     char* movingBuf = buf;
     int rtcpLength = 0;
@@ -127,7 +126,7 @@ int RtcpAggregator::analyzeFeedback(char *buf, int len) {
           theData->jitter = theData->jitter > chead->getJitter()? theData->jitter: chead->getJitter();
           calculateLastSr = chead->getLastSr();
           calculatedlsr = (chead->getDelaySinceLastSr() * 1000) / 65536;
-          for (std::list<boost::shared_ptr<SrDelayData>>::iterator it = theData->senderReports.begin();
+          for (std::list<std::shared_ptr<SrDelayData>>::iterator it = theData->senderReports.begin();
                         it != theData->senderReports.end(); ++it) {
             if ((*it)->sr_ntp == calculateLastSr) {
               uint64_t sentts = (*it)->sr_send_time;
@@ -241,11 +240,12 @@ int RtcpAggregator::analyzeFeedback(char *buf, int len) {
 }
 
 void RtcpAggregator::checkRtcpFb() {
-  boost::mutex::scoped_lock mlock(mapLock_);
-  std::map<uint32_t, boost::shared_ptr<RtcpData>>::iterator it;
+  std::lock_guard<std::mutex> mlock(mapLock_);
+
+  std::map<uint32_t, std::shared_ptr<RtcpData>>::iterator it;
   for (it = rtcpData_.begin(); it != rtcpData_.end(); it++) {
-    boost::shared_ptr<RtcpData> rtcpData = it->second;
-    boost::mutex::scoped_lock lock(rtcpData->dataLock);
+    std::shared_ptr<RtcpData> rtcpData = it->second;
+    std::lock_guard<std::mutex> lock(rtcpData->dataLock);
     uint32_t sourceSsrc = it->first;
     uint32_t sinkSsrc;
     uint64_t now = ClockUtils::timePointToMs(clock::now());
@@ -348,7 +348,10 @@ void RtcpAggregator::checkRtcpFb() {
       }
       rtcpData->last_rr_was_scheduled = now;
       // schedule next packet
-      std::string thread_id = boost::lexical_cast<std::string>(boost::this_thread::get_id());
+      std::ostringstream oss;
+      oss << std::this_thread::get_id();
+      std::string thread_id = oss.str();
+
       unsigned int thread_number = 0;
       sscanf(thread_id.c_str(), "%x", &thread_number);
 
@@ -408,7 +411,7 @@ int RtcpAggregator::addNACK(char* buf, int len, uint16_t seqNum, uint16_t blp, u
   return (len + nackLength);
 }
 
-void RtcpAggregator::resetData(boost::shared_ptr<RtcpData> data, uint32_t bandwidth) {
+void RtcpAggregator::resetData(std::shared_ptr<RtcpData> data, uint32_t bandwidth) {
   data->ratioLost = 0;
   data->requestRr = false;
   data->shouldReset = false;

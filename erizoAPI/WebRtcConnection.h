@@ -28,7 +28,7 @@ class WebRtcConnection : public erizo::WebRtcConnectionEventListener,
     std::queue<int> event_status;
     std::queue<std::pair<std::string, std::string>> event_messages;
 
-    boost::mutex mutex;
+    std::mutex mutex;
 
  private:
     WebRtcConnection();

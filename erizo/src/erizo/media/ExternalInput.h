@@ -1,8 +1,10 @@
 #ifndef ERIZO_SRC_ERIZO_MEDIA_EXTERNALINPUT_H_
 #define ERIZO_SRC_ERIZO_MEDIA_EXTERNALINPUT_H_
 
-#include <boost/scoped_ptr.hpp>
-#include <boost/thread.hpp>
+#include <memory>
+#include <thread>
+#include <mutex>
+
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -40,15 +42,17 @@ class ExternalInput : public MediaSource, public RTPDataReceiver {
   void close() override {}
 
  private:
-  boost::scoped_ptr<OutputProcessor> op_;
+  std::unique_ptr<OutputProcessor> op_;
   VideoDecoder inCodec_;
-  boost::scoped_array<unsigned char> decodedBuffer_;
+  std::unique_ptr<unsigned char[]> decodedBuffer_;
+
 
   std::string url_;
   bool running_;
   bool needTranscoding_;
-  boost::mutex queueMutex_;
-  boost::thread thread_, encodeThread_;
+
+  std::mutex queueMutex_;
+  std::thread thread_, encodeThread_;
   std::queue<RawDataPacket> packetQueue_;
   AVFormatContext* context_;
   AVPacket avpacket_;

@@ -60,7 +60,7 @@ void cb_new_selected_pair(NiceAgent *agent, guint stream_id, guint component_id,
   conn->updateComponentState(component_id, IceState::READY);
 }
 
-LibNiceConnection::LibNiceConnection(boost::shared_ptr<LibNiceInterface> libnice, const IceConfig& ice_config)
+LibNiceConnection::LibNiceConnection(std::shared_ptr<LibNiceInterface> libnice, const IceConfig& ice_config)
   : IceConnection{ice_config},
     lib_nice_{libnice}, agent_{NULL}, loop_{NULL}, candsDelivered_{0}, receivedLastCandidate_{false} {
   #if !GLIB_CHECK_VERSION(2, 35, 0)
@@ -73,7 +73,7 @@ LibNiceConnection::~LibNiceConnection() {
 }
 
 void LibNiceConnection::close() {
-  boost::mutex::scoped_lock lock(close_mutex_);
+  std::lock_guard<std::mutex> lock(close_mutex_);
   if (this->checkIceState() == IceState::FINISHED) {
     return;
   }
@@ -85,12 +85,8 @@ void LibNiceConnection::close() {
   }
   cond_.notify_one();
   listener_.reset();
-  boost::system_time const timeout = boost::get_system_time() + boost::posix_time::milliseconds(5);
   ELOG_DEBUG("%s message: m_thread join, this: %p", toLog(), this);
-  if (!m_Thread_.timed_join(timeout)) {
-    ELOG_DEBUG("%s message: interrupt thread to close, this: %p", toLog(), this);
-    m_Thread_.interrupt();
-  }
+  m_Thread_.join();
   if (loop_ != NULL) {
     ELOG_DEBUG("%s message:Unrefing loop", toLog());
     g_main_loop_unref(loop_);
@@ -112,7 +108,7 @@ void LibNiceConnection::close() {
 void LibNiceConnection::onData(unsigned int component_id, char* buf, int len) {
   IceState state;
   {
-    boost::mutex::scoped_lock lock(close_mutex_);
+    std::lock_guard<std::mutex> lock(close_mutex_);
     state = this->checkIceState();
   }
   if (state == IceState::READY) {
@@ -139,7 +135,7 @@ int LibNiceConnection::sendData(unsigned int component_id, const void* buf, int 
 }
 
 void LibNiceConnection::start() {
-    boost::mutex::scoped_lock lock(close_mutex_);
+    std::lock_guard<std::mutex> lock(close_mutex_);
     if (this->checkIceState() != INITIAL) {
       return;
     }
@@ -149,7 +145,7 @@ void LibNiceConnection::start() {
     // Create a nice agent
     agent_ = lib_nice_->NiceAgentNew(context_);
     loop_ = g_main_loop_new(context_, FALSE);
-    m_Thread_ = boost::thread(&LibNiceConnection::mainLoop, this);
+    m_Thread_ = std::thread(&LibNiceConnection::mainLoop, this);
     GValue controllingMode = { 0 };
     g_value_init(&controllingMode, G_TYPE_BOOLEAN);
     g_value_set_boolean(&controllingMode, false);
@@ -463,6 +459,6 @@ void LibNiceConnection::setReceivedLastCandidate(bool hasReceived) {
 }
 
 LibNiceConnection* LibNiceConnection::create(const IceConfig& ice_config) {
-  return new LibNiceConnection(boost::shared_ptr<LibNiceInterface>(new LibNiceInterfaceImpl()), ice_config);
+  return new LibNiceConnection(std::shared_ptr<LibNiceInterface>(new LibNiceInterfaceImpl()), ice_config);
 }
 } /* namespace erizo */

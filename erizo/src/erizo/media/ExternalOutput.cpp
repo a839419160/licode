@@ -84,7 +84,7 @@ bool ExternalOutput::init() {
   asyncTask([] (std::shared_ptr<ExternalOutput> output) {
     output->initializePipeline();
   });
-  thread_ = boost::thread(&ExternalOutput::sendLoop, this);
+  thread_ = std::thread(&ExternalOutput::sendLoop, this);
   ELOG_DEBUG("Initialized successfully");
   return true;
 }
@@ -522,14 +522,14 @@ int ExternalOutput::sendFirPacket() {
 
 void ExternalOutput::sendLoop() {
   while (recording_) {
-    boost::unique_lock<boost::mutex> lock(mtx_);
+    std::unique_lock<std::mutex> lock(mtx_);
     cond_.wait(lock);
     while (audio_queue_.hasData()) {
-      boost::shared_ptr<DataPacket> audio_packet = audio_queue_.popPacket();
+      std::shared_ptr<DataPacket> audio_packet = audio_queue_.popPacket();
       writeAudioData(audio_packet->data, audio_packet->length);
     }
     while (video_queue_.hasData()) {
-      boost::shared_ptr<DataPacket> video_packet = video_queue_.popPacket();
+      std::shared_ptr<DataPacket> video_packet = video_queue_.popPacket();
       writeVideoData(video_packet->data, video_packet->length);
     }
     if (!inited_ && first_data_received_ != time_point()) {
@@ -539,11 +539,11 @@ void ExternalOutput::sendLoop() {
 
   // Since we're bailing, let's completely drain our queues of all data.
   while (audio_queue_.getSize() > 0) {
-    boost::shared_ptr<DataPacket> audio_packet = audio_queue_.popPacket(true);  // ignore our minimum depth check
+    std::shared_ptr<DataPacket> audio_packet = audio_queue_.popPacket(true);  // ignore our minimum depth check
     writeAudioData(audio_packet->data, audio_packet->length);
   }
   while (video_queue_.getSize() > 0) {
-    boost::shared_ptr<DataPacket> video_packet = video_queue_.popPacket(true);  // ignore our minimum depth check
+    std::shared_ptr<DataPacket> video_packet = video_queue_.popPacket(true);  // ignore our minimum depth check
     writeVideoData(video_packet->data, video_packet->length);
   }
 }

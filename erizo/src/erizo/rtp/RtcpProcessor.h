@@ -1,7 +1,6 @@
 #ifndef ERIZO_SRC_ERIZO_RTP_RTCPPROCESSOR_H_
 #define ERIZO_SRC_ERIZO_RTP_RTCPPROCESSOR_H_
 
-#include <boost/shared_ptr.hpp>
 
 #include <map>
 #include <list>
@@ -70,7 +69,7 @@ class RtcpData {
 
   MediaType mediaType;
 
-  std::list<boost::shared_ptr<SrDelayData>> senderReports;
+  std::list<std::shared_ptr<SrDelayData>> senderReports;
   std::set<uint32_t> nackedPackets_;
 
   RtcpData() {
@@ -104,7 +103,7 @@ class RtcpData {
   }
 
   // lock for any blocking data change
-  boost::mutex dataLock;
+  std::mutex dataLock;
 };
 
 class RtcpProcessor : public Service {

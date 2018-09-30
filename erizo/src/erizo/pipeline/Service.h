@@ -2,6 +2,7 @@
 #define ERIZO_SRC_ERIZO_PIPELINE_SERVICE_H_
 
 #include "pipeline/Pipeline.h"
+#include <assert.h>
 
 namespace erizo {
 

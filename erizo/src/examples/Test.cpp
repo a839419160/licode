@@ -1,12 +1,12 @@
 #include <iostream>
 #include <stdio.h>
 
-#include <boost/thread.hpp>
-#include <boost/thread/mutex.hpp>
+#include <thread>
+#include <mutex>
 
 #include "Test.h"
 
-using boost::asio::ip::udp;
+using asio::ip::udp;
 
 namespace erizo {
 Test::Test() {
@@ -52,12 +52,12 @@ Test::Test() {
 //	mp->initVideoPackagerRTP(r);
 //	mp->initVideoUnpackagerRTP(r);
 //
-	ioservice_ = new boost::asio::io_service;
+	ioservice_ = new asio::io_service;
 	resolver_ = new udp::resolver(*ioservice_);
 	socket_ = new udp::socket(*ioservice_, udp::endpoint(udp::v4(), 40000));
 	query_ = new udp::resolver::query(udp::v4(), "127.0.0.1", "50000");
 
-	boost::thread t = boost::thread(&Test::rec, this);
+	std::thread t = std::thread(&Test::rec, this);
 	t.join();
 
 }
@@ -91,7 +91,7 @@ void Test::rec() {
 //
 		memset(buff, 0, 2000);
 //
-		a = socket_->receive(boost::asio::buffer(buff, 2000));
+		a = socket_->receive(asio::buffer(buff, 2000));
 		ip->receiveVideoData(buff, a);
 //		printf("********* RECEPCIÓN *********\n");
 //		printf("Bytes = %d\n", a);
@@ -152,7 +152,7 @@ void Test::send(char *buff, int buffSize) {
 ////	udp::resolver::iterator iterator = resolver_->resolve(*query_);
 //
 ////	socket_->send_to(buffSend2, b, "toronado.dit.upm.es", 5005);
-////	socket_->send_to(boost::asio::buffer(buffSend2, b), *iterator);
+////	socket_->send_to(asio::buffer(buffSend2, b), *iterator);
 //	free(buffSend);
 //	free(buffSend2);
 //

@@ -2,12 +2,14 @@ cmake_minimum_required(VERSION 2.6)
 
 project (ERIZO_TEST)
 
-set(CMAKE_CXX_FLAGS "-g -Wall -std=c++11 -lpthread ${ERIZO_CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-g -Wall -std=c++11 -lpthread -DASIO_STANDALONE ${ERIZO_CMAKE_CXX_FLAGS}")
 
 file(GLOB_RECURSE ERIZO_TEST_SDPS ${ERIZO_TEST_SOURCE_DIR}/*.sdp)
 file(COPY ${ERIZO_TEST_SDPS} DESTINATION ${ERIZO_TEST_BINARY_DIR})
 file(COPY ${ERIZO_TEST_SOURCE_DIR}/log4cxx.properties DESTINATION ${ERIZO_TEST_BINARY_DIR})
 file(GLOB_RECURSE ERIZO_TEST_SOURCES ${ERIZO_TEST_SOURCE_DIR}/*.cpp ${ERIZO_TEST_SOURCE_DIR}/*.h)
+find_library(SSL ssl HINTS "${THIRD_PARTY_LIB}")
+test_lib(${SSL})
 
 link_directories("${GMOCK_BUILD}/lib")
 

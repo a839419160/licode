@@ -1,8 +1,12 @@
 # Licode
 
-## 1、只支持centos (only support centos)
-* 线上系统基本都用centos
-* 没有时间适配其他系统
+## 1、说明
+* 只支持centos (only support centos)
+* 线上系统基本只用centos
+* 使用最新ffmpeg替换libav
+* 使用c++1x替换boost
+* 脚本更友好
+
 
 ## 2、示例 (usage)
 
@@ -32,5 +36,5 @@
 	#stop basic example
 	./stopBasicExample.sh
 	
-	#restart licode and basic example  ^_^
+	#restart licode and basic example  ^_^
 	./restartAll.sh

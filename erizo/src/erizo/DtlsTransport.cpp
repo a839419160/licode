@@ -276,7 +276,7 @@ void DtlsTransport::writeDtlsPacket(DtlsSocketContext *ctx, packetPtr packet) {
 
 void DtlsTransport::onHandshakeCompleted(DtlsSocketContext *ctx, std::string clientKey, std::string serverKey,
                                          std::string srtp_profile) {
-  boost::mutex::scoped_lock lock(sessionMutex_);
+  std::lock_guard<std::mutex> lock(sessionMutex_);
   std::string temp;
 
   if (rtp_timeout_checker_) {

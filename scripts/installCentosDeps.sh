@@ -104,6 +104,8 @@ install_mediadeps() {
     sudo yum -y -q install git autoconf automake gettext make libtool mercurial pkgconfig patch libXext-devel glibc libstdc++ zlib
     #for x264
     nasm_inst
+    inst $LIB_DIR https://github.com/chriskohlhoff/asio git "cd asio \&\& ./autogen.sh \&\& ./configure --prefix=$PREFIX_DIR" --without-boost
+    exit
     #inst $LIB_DIR https://github.com/madler/zlib git ./configure --prefix="$PREFIX_DIR"
     inst $LIB_DIR https://github.com/webmproject/libvpx git ./configure --prefix="$PREFIX_DIR" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm
     inst $LIB_DIR https://github.com/mirror/x264 git ./configure --prefix="$PREFIX_DIR" --enable-shared
@@ -116,15 +118,15 @@ install_libsrtp() {
 }
 
 
-echo '--------------install_yum_deps------------------'
-install_yum_deps
-echo '----------------check_proxy---------------------'
-check_proxy
-echo '---------------install_openssl------------------'
-install_openssl
-echo '---------------install_libsrtp------------------'
-install_libsrtp
-echo '---------------install_libnice------------------'
-install_libnice
+# echo '--------------install_yum_deps------------------'
+# install_yum_deps
+# echo '----------------check_proxy---------------------'
+# check_proxy
+# echo '---------------install_openssl------------------'
+# install_openssl
+# echo '---------------install_libsrtp------------------'
+# install_libsrtp
+# echo '---------------install_libnice------------------'
+# install_libnice
 echo '---------------install_mediadeps------------------'
 install_mediadeps

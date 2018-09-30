@@ -20,9 +20,9 @@ RtcpForwarder::RtcpForwarder(MediaSink* msink, MediaSource* msource, uint32_t ma
   }
 
 void RtcpForwarder::addSourceSsrc(uint32_t ssrc) {
-  boost::mutex::scoped_lock mlock(mapLock_);
+  std::lock_guard<std::mutex> mlock(mapLock_);
   if (rtcpData_.find(ssrc) == rtcpData_.end()) {
-    this->rtcpData_[ssrc] = boost::shared_ptr<RtcpData>(new RtcpData());
+    this->rtcpData_[ssrc] = std::shared_ptr<RtcpData>(new RtcpData());
     if (ssrc == this->rtcpSource_->getAudioSourceSSRC()) {
       ELOG_DEBUG("Adding new Audio source SSRC %u", ssrc);
       this->rtcpData_[ssrc]->mediaType = AUDIO_TYPE;
@@ -41,14 +41,14 @@ void RtcpForwarder::analyzeSr(RtcpHeader* chead) {
   // We try to add it just in case it is not there yet (otherwise its noop)
   this->addSourceSsrc(recvSSRC);
 
-  boost::mutex::scoped_lock mlock(mapLock_);
-  boost::shared_ptr<RtcpData> theData = rtcpData_[recvSSRC];
-  boost::mutex::scoped_lock lock(theData->dataLock);
+  std::lock_guard<std::mutex> mlock(mapLock_);
+  std::shared_ptr<RtcpData> theData = rtcpData_[recvSSRC];
+  std::lock_guard<std::mutex> lock(theData->dataLock);
   uint64_t now = ClockUtils::timePointToMs(clock::now());
   uint32_t ntp;
   uint64_t theNTP = chead->getNtpTimestamp();
   ntp = (theNTP & (0xFFFFFFFF0000)) >> 16;
-  theData->senderReports.push_back(boost::shared_ptr<SrDelayData>( new SrDelayData(ntp, now)));
+  theData->senderReports.push_back(std::shared_ptr<SrDelayData>( new SrDelayData(ntp, now)));
   // We only store the last 20 sr
   if (theData->senderReports.size() > 20) {
     theData->senderReports.pop_front();

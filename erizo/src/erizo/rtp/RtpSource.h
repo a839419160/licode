@@ -8,9 +8,9 @@
 #ifndef ERIZO_SRC_ERIZO_RTP_RTPSOURCE_H_
 #define ERIZO_SRC_ERIZO_RTP_RTPSOURCE_H_
 
-#include <boost/asio.hpp>
-#include <boost/scoped_ptr.hpp>
-#include <boost/thread.hpp>
+#include <asio.hpp>
+#include <thread>
+#include <mutex>
 
 #include <string>
 
@@ -28,14 +28,14 @@ class RtpSource: public MediaSource, public FeedbackSink {
 
  private:
   static const int LENGTH = 1500;
-  boost::scoped_ptr<boost::asio::ip::udp::socket> socket_, fbSocket_;
-  boost::scoped_ptr<boost::asio::ip::udp::resolver> resolver_;
-  boost::scoped_ptr<boost::asio::ip::udp::resolver::query> query_;
-  boost::asio::ip::udp::resolver::iterator iterator_;
-  boost::asio::io_service io_service_;
-  boost::thread rtpSource_thread_;
+  std::unique_ptr<asio::ip::udp::socket> socket_, fbSocket_;
+  std::unique_ptr<asio::ip::udp::resolver> resolver_;
+  std::unique_ptr<asio::ip::udp::resolver::query> query_;
+  asio::ip::udp::resolver::iterator iterator_;
+  asio::io_service io_service_;
+  std::thread rtpSource_thread_;
   char* buffer_[LENGTH];
-  void handleReceive(const::boost::system::error_code& error, size_t bytes_recvd); // NOLINT
+  void handleReceive(const asio::error_code& error, size_t bytes_recvd); // NOLINT
   void eventLoop();
   int deliverFeedback_(std::shared_ptr<DataPacket> fb_packet) override;
 };
