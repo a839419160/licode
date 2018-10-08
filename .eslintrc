@@ -1,6 +1,50 @@
 {
     "extends": "airbnb",
-    "rules": {
-      "no-cond-assign": ["error", "except-parens"]
-    }
+        "rules": {
+            "no-cond-assign": ["error", "except-parens"],
+            "spaced-comment": 0,
+            "strict": 0,
+            "lines-around-directive": 0,
+            /* "one-var": [2, { "var": "always","let": "always", "const": "never" }], */
+            "one-var": 0,
+            "no-var": 0,
+            "indent": 0,
+            "import/no-extraneous-dependencies": 0,
+            "comma-dangle": 0,
+            "no-for-loop": 0,
+            "prefer-template":0,
+            "guard-for-in": 0,
+            "vars-on-top": 0,
+            "no-path-concat": 0,
+            "func-names": 0,
+            "space-before-function-paren": 0,
+            "prefer-arrow-callback": 0,
+            "padded-blocks": 0,
+            "space-before-blocks": 0,
+            "no-restricted-syntax": 0,
+            "operator-linebreak": 0,
+            "no-underscore-dangle": 0,
+            "prefer-const": 0,
+            "default-case": 0,
+            "no-console": 0,
+            "prefer-destructuring": 0,
+            "no-shadow": 0,
+            "object-curly-spacing": 0,
+            "object-shorthand": 0,
+            "one-var-declaration-per-line": 0,
+            "func-call-spacing": 0,
+            "no-spaced-func": 0,
+            "comma-spacing": 0,
+            "import/order": 0,
+            "no-prototype-builtins": 0,
+            "no-param-reassign": 0,
+            "global-require": 0,
+            "import/no-dynamic-require": 0,
+            "object-curly-newline": 0,
+            "no-multi-assign": 0,
+            "no-plusplus": 0,
+            "quote-props": 0,
+            "key-spacing": 0,
+
+        }
 }
