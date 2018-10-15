@@ -105,7 +105,6 @@ install_mediadeps() {
     #for x264
     nasm_inst
     inst $LIB_DIR https://github.com/chriskohlhoff/asio git "cd asio \&\& ./autogen.sh \&\& ./configure --prefix=$PREFIX_DIR" --without-boost
-    exit
     #inst $LIB_DIR https://github.com/madler/zlib git ./configure --prefix="$PREFIX_DIR"
     inst $LIB_DIR https://github.com/webmproject/libvpx git ./configure --prefix="$PREFIX_DIR" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm
     inst $LIB_DIR https://github.com/mirror/x264 git ./configure --prefix="$PREFIX_DIR" --enable-shared
