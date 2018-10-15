@@ -118,15 +118,15 @@ install_libsrtp() {
 }
 
 
-# echo '--------------install_yum_deps------------------'
-# install_yum_deps
-# echo '----------------check_proxy---------------------'
-# check_proxy
-# echo '---------------install_openssl------------------'
-# install_openssl
-# echo '---------------install_libsrtp------------------'
-# install_libsrtp
-# echo '---------------install_libnice------------------'
-# install_libnice
+echo '--------------install_yum_deps------------------'
+install_yum_deps
+echo '----------------check_proxy---------------------'
+check_proxy
+echo '---------------install_openssl------------------'
+install_openssl
+echo '---------------install_libsrtp------------------'
+install_libsrtp
+echo '---------------install_libnice------------------'
+install_libnice
 echo '---------------install_mediadeps------------------'
 install_mediadeps
