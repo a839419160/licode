@@ -79,8 +79,8 @@ install_yum_deps() {
     nvm use
     npm install
     npm install -g node-gyp --registry=https://registry.npm.taobao.org
-    npm install gulp@3.9.1 gulp-eslint@3 run-sequence@2.2.1 webpack-stream@4.0.0 google-closure-compiler-js@20170521.0.0 del@3.0.0 gulp-sourcemaps@2.6.4 script-loader@0.7.2 expose-loader@0.7.5 --registry=https://registry.npm.taobao.org
-    sudo yum install -y -q git make cmake glib2-devel pkgconfig boost-devel rabbitmq-server mongodb-server mongodb curl log4cxx-devel gnutls-devel bzip2
+    npm install gulp@3.9.1 gulp-eslint@3 run-sequence@2.2.1 webpack-stream@4.0.0 del@3.0.0 gulp-sourcemaps@2.6.4 script-loader@0.7.2 expose-loader@0.7.5 --registry=https://registry.npm.taobao.org
+    sudo yum install -y -q git make cmake glib-devel glib2-devel pkgconfig boost-devel rabbitmq-server mongodb-server mongodb curl log4cxx-devel gnutls-devel bzip2
 
     sudo chown -R $(whoami) ~/.npm
 }
@@ -105,8 +105,8 @@ install_mediadeps() {
     #for x264
     nasm_inst
     inst $LIB_DIR https://github.com/chriskohlhoff/asio git "cd asio \&\& ./autogen.sh \&\& ./configure --prefix=$PREFIX_DIR" --without-boost
-    #inst $LIB_DIR https://github.com/madler/zlib git ./configure --prefix="$PREFIX_DIR"
-    inst $LIB_DIR https://github.com/webmproject/libvpx git ./configure --prefix="$PREFIX_DIR" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm
+    # inst $LIB_DIR https://github.com/madler/zlib git ./configure --prefix="$PREFIX_DIR"
+    inst $LIB_DIR https://github.com/webmproject/libvpx git ./configure --prefix="$PREFIX_DIR" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm --enable-shared
     inst $LIB_DIR https://github.com/mirror/x264 git ./configure --prefix="$PREFIX_DIR" --enable-shared
     inst $LIB_DIR https://github.com/xiph/opus git ./configure --prefix="$PREFIX_DIR"
     inst $LIB_DIR https://github.com/FFmpeg/FFmpeg git "./configure --prefix=$PREFIX_DIR --enable-hardcoded-tables --extra-cflags=-I$PREFIX_DIR/include --extra-ldflags=-L$PREFIX_DIR/lib --extra-libs=-lpthread --extra-libs=-lm --enable-gpl --enable-nonfree --enable-openssl --enable-libopus --enable-libx264 --enable-libvpx --disable-debug --enable-gpl --enable-nonfree --enable-shared --disable-static"

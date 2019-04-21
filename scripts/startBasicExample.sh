@@ -23,6 +23,7 @@ function start_nginx() {
 
 
 function start_basic_example() {
+    echo "cp $ROOT/nuve/nuveClient/dist/nuve.js $EXTRAS/basic_example/"
     cp $ROOT/nuve/nuveClient/dist/nuve.js $EXTRAS/basic_example/
     . $NVM_CHECK
     nvm use
